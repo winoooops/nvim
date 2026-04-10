@@ -1,0 +1,19 @@
+# lazy.nvim compiles here — regenerated on every launch
+plugin/packer_compiled.lua
+
+# Machine-local state
+spell/
+sessions/
+undo/
+shada/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Machine-local override (YAGNI — not created by default, but ignored preemptively)
+lua/local.lua
+
+# Editor temp
+*.swp
+*.swo
