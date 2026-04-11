@@ -36,7 +36,11 @@ return {
 
     -- Named persistent terminals. Each has a unique count so toggling
     -- reopens the same instance.
-    local claude = Terminal:new({ cmd = "claude", hidden = true, direction = "vertical", count = 11 })
+    -- Matches the user's bashrc alias: NO_FLICKER=1 claude --dangerously-skip-permissions
+    -- Bash aliases aren't expanded in non-interactive shells, so we inline the
+    -- expansion here. If you don't want --dangerously-skip-permissions on a
+    -- given machine, edit this line or fall back to `cmd = "bash -ic claude"`.
+    local claude = Terminal:new({ cmd = "NO_FLICKER=1 claude --dangerously-skip-permissions", hidden = true, direction = "vertical", count = 11 })
     local codex = Terminal:new({ cmd = "codex", hidden = true, direction = "vertical", count = 12 })
     local gemini = Terminal:new({ cmd = "gemini", hidden = true, direction = "vertical", count = 13 })
     local scratch = Terminal:new({ hidden = true, direction = "vertical", count = 14 })
