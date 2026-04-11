@@ -60,8 +60,23 @@ return {
     dependencies = { "echasnovski/mini.icons" },
     opts = {
       view = { width = 32 },
-      renderer = { group_empty = true },
+      renderer = {
+        group_empty = true,
+        highlight_git = true,
+        icons = { show = { git = true } },
+      },
       filters = { dotfiles = false },
+      -- Agent-friendly refresh: watch the filesystem so edits from
+      -- Claude/Codex/Gemini CLIs appear in the tree instantly, reload
+      -- when focus returns, and follow the current buffer.
+      filesystem_watchers = {
+        enable = true,
+        debounce_delay = 50,
+        ignore_dirs = { "node_modules", ".git", "target", "dist", "build" },
+      },
+      reload_on_bufenter = true,
+      update_focused_file = { enable = true, update_root = false },
+      git = { enable = true, ignore = false, timeout = 500 },
     },
   },
 
