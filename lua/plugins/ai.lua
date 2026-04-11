@@ -7,8 +7,11 @@
 return {
   {
     "olimorris/codecompanion.nvim",
+    -- Lazy-load via command. keymaps.lua binds <leader>a* to <cmd>CodeCompanion*<CR>
+    -- mappings; lazy's cmd stub intercepts the command, loads the plugin, and
+    -- re-runs it. Avoid `keys = {...}` here — the string form would install
+    -- load-only stubs that shadow the keymaps.lua bindings.
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
-    keys = { "<leader>ac", "<leader>aa", "<leader>an", "<leader>ae" },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",

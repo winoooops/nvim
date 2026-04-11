@@ -5,11 +5,13 @@
 
 return {
   "akinsho/toggleterm.nvim",
+  -- Eager load. The config function creates _G._LAZYGIT_TOGGLE and the
+  -- <leader>t* keymaps, both referenced by keymaps.lua. Lazy-loading via
+  -- `keys` string stubs caused those bindings to be shadowed; lazy-loading
+  -- via VeryLazy didn't fire in headless/cmd invocations. A small plugin,
+  -- cost is negligible.
+  lazy = false,
   cmd = { "ToggleTerm", "TermExec" },
-  keys = {
-    "<leader>tc", "<leader>tx", "<leader>tg", "<leader>tt",
-    "<leader>tv", "<leader>th", "<leader>tf", "<leader>g",
-  },
   version = "*",
   config = function()
     require("toggleterm").setup({
