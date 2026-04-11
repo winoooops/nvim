@@ -56,11 +56,12 @@ gi    implementation
 ```
 <leader>tc    Claude CLI      <leader>tt  scratch shell
 <leader>tx    Codex CLI       <leader>g   lazygit (float)
-<leader>tg    Gemini CLI
+<leader>tg    Gemini CLI      <leader>ai  WSL2: send clipboard image → Claude
 
 <leader>tv  force vertical   <leader>th  force horizontal   <leader>tf  force float
 ```
-Inside terminal: `<Esc>` to normal mode, `<C-hjkl>` navigate out.
+Inside a terminal: `<Esc>` → terminal-normal mode, then `<C-hjkl>` to navigate out.
+**Do NOT** press `<C-j>` in insert mode — Claude/Codex use it for newline. No terminal-mode override is installed, so raw keys pass through.
 
 ### In-editor chat (CodeCompanion — needs `ANTHROPIC_API_KEY`)
 ```

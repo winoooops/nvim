@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# bin/wsl-clip-img — save the Windows clipboard image to a WSL tempfile and
+# print the absolute WSL path on stdout. Exits 1 if the clipboard does not
+# contain an image.
+#
+# Usage:
+#   path=$(wsl-clip-img) && claude "describe this image: $path"
+#   # or from nvim via :WslClipImg (see lua/core/autocmds.lua)
+#
+# Requires: WSL2, powershell.exe on PATH (it usually is by default).
+set -euo pipefail
+
+if ! command -v powershell.exe >/dev/null 2>&1; then
+  echo "powershell.exe not found — this script only works inside WSL2" >&2
+  exit 2
+fi
+
+OUT_WSL="/tmp/clip-$(date +%Y%m%d-%H%M%S).png"
+OUT_WIN="$(wslpath -w "$OUT_WSL")"
+
+# PowerShell: read image from clipboard, save as PNG. Exit 0 on success, 1 on no image.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "
+Add-Type -AssemblyName System.Windows.Forms;
+Add-Type -AssemblyName System.Drawing;
+\$img = [System.Windows.Forms.Clipboard]::GetImage();
+if (\$img) {
+  \$img.Save('$OUT_WIN', [System.Drawing.Imaging.ImageFormat]::Png);
+  exit 0
+} else {
+  exit 1
+}
+" >/dev/null 2>&1 || {
+  echo "No image in Windows clipboard (try Win+Shift+S to capture one first)" >&2
+  exit 1
+}
+
+if [ ! -s "$OUT_WSL" ]; then
+  echo "Saved file is empty at $OUT_WSL" >&2
+  exit 1
+fi
+
+echo "$OUT_WSL"

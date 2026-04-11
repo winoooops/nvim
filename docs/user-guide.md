@@ -214,9 +214,41 @@ Each AI CLI gets its own persistent vertical-split terminal:
 Each terminal is persistent — toggle off with the same key, toggle back on, state is preserved. Terminals live for the whole nvim session.
 
 **Inside a terminal buffer:**
-- `<Esc>` — exit insert mode (switches to nvim normal mode on that buffer)
-- `<C-hjkl>` — navigate out of the terminal into other splits
-- `i` — enter insert mode again (type in the terminal)
+- `<Esc>` — exit terminal insert mode (switches to terminal-normal mode)
+- Then `<C-hjkl>` — navigate out into other splits (normal-mode mapping)
+- `i` or `a` — re-enter insert mode
+
+> **Why two steps?** Claude, Codex, and other CLIs use control keys for
+> their own UX: `<C-j>` = newline in a multi-line prompt, `<C-n>`/`<C-p>` =
+> history, `<C-r>` = reverse search. This config deliberately installs **no**
+> terminal-mode keymaps (except `<Esc>`) so those keys pass straight through
+> to the CLI. The cost is one extra keystroke per window jump.
+
+### WSL2: send a Windows screenshot into Claude (`<leader>ai`)
+
+Claude Code accepts image input via file path. On WSL2, Windows-side images
+(from `Win+Shift+S`, ShareX, etc.) live in the Windows clipboard and aren't
+directly accessible to the WSL filesystem. This config ships a helper that
+bridges them.
+
+**Workflow:**
+```
+1. On Windows: Win+Shift+S → capture screenshot (goes to clipboard)
+2. In nvim: <leader>ai
+   → opens the Claude terminal if not already open
+   → saves the clipboard image to /tmp/clip-YYYYMMDD-HHMMSS.png
+   → types the path at the Claude prompt
+   → also copies the path to the + register (system clipboard)
+3. In Claude, press Enter to submit, then ask your question about it.
+```
+
+If nothing's on the clipboard, you get a warn notification and nothing else
+happens. You can also invoke it as `:WslClipImg` from any buffer.
+
+**How it works:** `bin/wsl-clip-img` shells out to `powershell.exe` (which
+WSL has on PATH by default) and uses `System.Windows.Forms.Clipboard.GetImage()`
+to pull the image out, saving it as PNG to the WSL side via `wslpath`.
+Non-WSL machines don't register the keybind.
 
 ### CodeCompanion in-editor chat
 
