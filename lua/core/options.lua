@@ -62,3 +62,10 @@ opt.timeoutlen = 500
 opt.clipboard = "unnamedplus"
 
 -- Leader is set in keymaps.lua before any mapping is declared.
+
+-- Disable unused vim providers (silences :checkhealth vim.provider warnings).
+-- Re-enable any of these by setting the global to 1 or removing the line.
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0

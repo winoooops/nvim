@@ -98,12 +98,22 @@ return {
     priority = 1000,
     lazy = false,
     opts = {
+      -- Enabled modules
       dashboard = { enabled = true },
       notifier = { enabled = true, timeout = 3000 },
       bufdelete = { enabled = true },
       quickfile = { enabled = true },
-      statuscolumn = { enabled = false }, -- lualine owns status
       words = { enabled = true },
+      -- Explicitly disabled — silences :checkhealth snacks false-positive
+      -- errors that fire from submodule health checks regardless of enabled state.
+      image = { enabled = false },
+      statuscolumn = { enabled = false }, -- lualine owns status
+      bigfile = { enabled = false },
+      explorer = { enabled = false }, -- nvim-tree is primary
+      input = { enabled = false },
+      picker = { enabled = false }, -- telescope is primary
+      scope = { enabled = false },
+      scroll = { enabled = false },
     },
   },
 

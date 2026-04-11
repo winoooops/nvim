@@ -34,4 +34,8 @@ require("lazy").setup({
   install = { colorscheme = { "tokyonight", "default" } },
   checker = { enabled = false }, -- don't auto-check for updates; user runs :Lazy sync manually
   change_detection = { notify = false },
+  -- No plugin in this config currently requires luarocks/rockspec deps.
+  -- Disabling silences the :checkhealth warning. Flip to true if a future
+  -- plugin pulls in a rockspec dependency.
+  rocks = { enabled = false },
 })
