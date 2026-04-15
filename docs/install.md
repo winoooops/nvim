@@ -28,7 +28,21 @@ sudo apt install neovim  # or use the PPA for 0.11
 
 Verify: `nvim --version | head -1` → `NVIM v0.11.x` or later.
 
-## 2. System tools
+## 2. tmux ≥ 3.0
+
+### macOS
+```bash
+brew install tmux
+```
+
+### Debian/Ubuntu
+```bash
+sudo apt install -y tmux
+```
+
+Verify: `tmux -V` → `tmux 3.x` or later.
+
+## 3. System tools
 
 ### macOS
 ```bash
@@ -43,7 +57,7 @@ mkdir -p ~/.local/bin && ln -sf "$(which fdfind)" ~/.local/bin/fd
 # Install lazygit separately — see https://github.com/jesseduffield/lazygit#installation
 ```
 
-## 3. JetBrainsMono Nerd Font
+## 4. JetBrainsMono Nerd Font
 
 ### macOS
 ```bash
@@ -67,7 +81,7 @@ Fonts must be installed in **Windows**, not WSL. Windows Terminal renders the fo
 2. Unzip, right-click each `.ttf`, "Install for all users".
 3. Windows Terminal → Settings → your WSL profile → Appearance → Font face → `JetBrainsMono Nerd Font`.
 
-## 4. WSL2 clipboard bridge (WSL2 only)
+## 5. WSL2 clipboard bridge (WSL2 only)
 
 `win32yank.exe` lets yanks in Neovim (Linux side) flow to the Windows clipboard. Without this, `y` works inside nvim but can't paste into Windows apps.
 
@@ -81,7 +95,7 @@ which win32yank.exe
 
 Verify: `echo hi | win32yank.exe -i` then paste in Windows Notepad → `hi`.
 
-## 5. AI CLIs (for the `<leader>t*` terminals)
+## 6. AI CLIs (for the `<leader>t*` terminals)
 
 ```bash
 npm i -g @anthropic-ai/claude-code
@@ -95,21 +109,32 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 export OPENAI_API_KEY="sk-..."
 ```
 
-## 6. Clone this config
+## 7. Clone and setup
 
 ```bash
-git clone https://github.com/winoooops/nvim.git ~/.config/nvim
+git clone git@github.com:winoooops/nvim.git ~/.config/nvim
+cd ~/.config/nvim
+bash setup.sh
+```
+
+`setup.sh` does everything in one pass:
+- Symlinks `tmux/tmux.conf` → `~/.tmux.conf` (backs up any existing config)
+- Installs TPM (tmux plugin manager) + tmux plugins
+- Bootstraps lazy.nvim and installs all nvim plugins from `lazy-lock.json` (1–3 minutes first time)
+
+## 8. Post-install check
+
+**Neovim:**
+```
 nvim
+:checkhealth lazy vim.lsp vim.treesitter vim.provider telescope
 ```
+Expect green/OK for all. Yellow/warn for optional providers is acceptable.
 
-On first launch, lazy.nvim clones itself and installs every plugin from `lazy-lock.json`. This takes 1-3 minutes and only happens once per machine.
-
-## 7. Post-install check
-
+**Tmux:**
+```bash
+tmux
+# Press Ctrl+b Space — which-key popup should appear
 ```
-:checkhealth
-```
-
-Expect green/OK for: core, mason, treesitter, telescope, lazy. Yellow/warn is acceptable for optional providers (Perl, Ruby).
 
 If anything fails: [troubleshooting.md](troubleshooting.md).

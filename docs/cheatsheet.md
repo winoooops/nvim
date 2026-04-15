@@ -132,6 +132,28 @@ docs         ┌─ cheatsheet.md       ← you are here
 
 ---
 
+## 🖥 tmux (prefix = `Ctrl+b`)
+
+```
+SESSIONS & WINDOWS       PANES                    COPY MODE (vi keys)
+Ctrl+b c   new window    Ctrl+b |  vsplit          Ctrl+b [  enter copy mode
+Alt+1..5   jump window   Ctrl+b -  hsplit          v         start selection
+Alt+h/l    prev/next     Ctrl+b x  kill pane       y         yank (→ clipboard)
+Ctrl+b d   detach        Ctrl+b z  zoom toggle     Ctrl+b ]  paste
+Ctrl+b $   rename sess   Alt+arrows navigate
+Ctrl+b ,   rename win    Ctrl+arrows resize        UTILITY
+                                                    Ctrl+b Space  which-key
+PLUGINS                                             Ctrl+b r      reload config
+Ctrl+b I       install plugins (TPM)                Ctrl+b ?      cheatsheet popup
+Ctrl+b Ctrl+s  save session (resurrect)
+Ctrl+b Ctrl+r  restore session (resurrect)
+
+TIP: hold Shift while mouse-selecting to bypass tmux → terminal native copy
+```
+
+---
+
 **Forgot something?** → [docs/user-guide.md](user-guide.md) has the full walkthrough.
-**Looking for a key?** → [docs/keybindings.md](keybindings.md) has every mapping in one table.
+**Looking for a key?** → [docs/keybindings.md](keybindings.md) has every nvim mapping.
+**Tmux details?** → [tmux/README.md](../tmux/README.md) has the full tmux reference.
 **Something broken?** → [docs/troubleshooting.md](troubleshooting.md).
