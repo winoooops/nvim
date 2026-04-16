@@ -65,6 +65,17 @@ return {
         highlight_git = true,
         icons = { show = { git = true } },
       },
+      actions = {
+        open_file = {
+          window_picker = {
+            enable = true,
+            exclude = {
+              filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame" },
+              buftype = { "nofile", "terminal", "help" },
+            },
+          },
+        },
+      },
       filters = { dotfiles = false },
       -- Agent-friendly refresh: watch the filesystem so edits from
       -- Claude/Codex/Gemini CLIs appear in the tree instantly, reload
@@ -92,25 +103,19 @@ return {
     },
   },
 
-  -- Treesitter (pin to master; `main` branch is a rewrite without the classic configs API)
+  -- Treesitter (master branch is archived; main branch + Neovim 0.12 built-in TS)
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "lua", "vim", "vimdoc", "bash", "json", "yaml", "toml", "markdown",
-          "markdown_inline", "html", "css", "javascript", "typescript", "tsx",
-          "python", "go", "rust", "regex",
-        },
-        highlight = { enable = true },
-        indent = { enable = true },
-        incremental_selection = { enable = true },
-      })
-    end,
+    opts = {
+      ensure_installed = {
+        "lua", "vim", "vimdoc", "bash", "json", "yaml", "toml", "markdown",
+        "markdown_inline", "html", "css", "javascript", "typescript", "tsx",
+        "python", "go", "rust", "regex",
+      },
+    },
   },
 
   -- Rainbow delimiters (replaces archived ts-rainbow)

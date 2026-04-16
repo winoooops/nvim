@@ -8,7 +8,7 @@ One file per plugin domain. Each file returns a lazy.nvim plugin spec (or list o
 |---|---|---|
 | `init.lua` | ✅ | lazy.nvim bootstrap + domain imports |
 | `ui.lua` | ✅ | tokyonight, catppuccin, mini.icons, lualine, bufferline, which-key, snacks.nvim, markview |
-| `editor.lua` | ✅ | telescope, smart-open, project.nvim, nvim-tree, oil.nvim, treesitter (pinned to `master` branch — see note), rainbow-delimiters, nvim-autopairs, Comment.nvim, indent-blankline |
+| `editor.lua` | ✅ | telescope, smart-open, project.nvim, nvim-tree, oil.nvim, treesitter (`main` branch), rainbow-delimiters, nvim-autopairs, Comment.nvim, indent-blankline |
 | `git.lua` | ✅ | gitsigns, diffview.nvim |
 | `terminal.lua` | ✅ | toggleterm (vertical default, named Claude/Codex/Gemini/lazygit terminals) |
 | `lsp.lua` | ✅ | mason, mason-lspconfig, nvim-lspconfig (lua_ls, pyright, ts_ls, gopls, rust_analyzer, jsonls, yamlls, bashls, html, cssls) |
@@ -21,10 +21,6 @@ One file per plugin domain. Each file returns a lazy.nvim plugin spec (or list o
 - ✅ active
 - ⏸ present but disabled (commented out)
 - 🚧 in progress
-
-## Note on nvim-treesitter
-
-`nvim-treesitter` is pinned to `branch = "master"` because the plugin's default branch migrated to `main` with a rewritten API that removes the classic `require("nvim-treesitter.configs")` setup. The `master` branch is archived upstream but still functional. A future migration to the new `main`-branch API is a known follow-up.
 
 ## Adding a plugin
 

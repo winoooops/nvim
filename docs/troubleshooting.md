@@ -42,7 +42,8 @@ Install lazygit on this machine — see [install.md § 2](install.md#2-system-to
 ## Treesitter parser errors on first launch
 Run `:TSUpdate` once. If a specific parser fails, it usually means missing `gcc`/`clang`. Install a C compiler and retry.
 
-Note: `nvim-treesitter` is pinned to the archived `master` branch because the plugin's default branch migrated to a rewritten API. If you see deprecation notices in `:checkhealth nvim-treesitter`, they're expected — we'll migrate to the new `main` branch API in a future update.
+## Treesitter errors after migrating to a new machine
+If you see errors like `attempt to call method 'range' (a nil value)` from treesitter or markview.nvim, run `:Lazy update nvim-treesitter` followed by `:TSUpdate` to rebuild all parser binaries for the new platform.
 
 ## Neovim version too old (< 0.11)
 Plugins like blink.cmp and snacks.nvim require 0.11+. Upgrade nvim — see [install.md § 1](install.md#1-neovim--011).

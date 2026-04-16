@@ -6,8 +6,11 @@ When you `git pull` on a second machine, read this file to see what's new since 
 
 ## [Unreleased]
 
+### Changed
+- **nvim-treesitter**: migrated from the archived `master` branch to the `main` branch. The legacy `require("nvim-treesitter.configs").setup()` API is replaced with the new `opts = { ensure_installed = {...} }` style. Highlighting, indentation, and incremental selection are now handled by Neovim's built-in treesitter support (0.10+). This fixes a crash (`attempt to call method 'range' (a nil value)`) triggered by markview.nvim on Neovim 0.12+.
+- **nvim-tree**: added `actions.open_file.window_picker.exclude` to skip terminal and special buffers. Files opened from nvim-tree no longer land in toggleterm panels (Claude, Codex, etc.).
+
 ### Known follow-ups
-- Migrate `nvim-treesitter` from the archived `master` branch to the new `main` branch API (`require("nvim-treesitter").install(...)` instead of `require("nvim-treesitter.configs").setup(...)`).
 - Install libsqlite3-dev on each machine if using `smart-open.nvim` for scoring (optional — telescope `find_files` works without it).
 
 ## [2026-04-10] Initial 2026 modernization
@@ -34,7 +37,7 @@ Complete rewrite of the 2022 Packer-based config into a 2026 agent-first layout.
 - Progressive-disclosure docs: top-level index `README.md`, per-directory READMEs in `lua/core/` and `lua/plugins/`, and `docs/install.md`, `docs/keybindings.md`, `docs/troubleshooting.md`, `docs/updating.md`
 - This `CHANGELOG.md`
 - `catppuccin` as an alternate colorscheme
-- Pinned `nvim-treesitter` to `branch = "master"` — the default branch migrated to a rewritten API mid-2025 that removes the classic `require("nvim-treesitter.configs")` setup. Master is archived but functional; migration is tracked in `[Unreleased]`.
+- ~~Pinned `nvim-treesitter` to `branch = "master"`~~ — migrated to `main` branch in a later update (see `[Unreleased]` above).
 
 ### Changed
 - Directory layout: `lua/basic.lua`, `lua/plugins.lua`, `lua/keybindings.lua` → `lua/core/options.lua`, `lua/core/keymaps.lua`, `lua/core/autocmds.lua`, `lua/core/platform.lua`, and `lua/plugins/<domain>.lua`
