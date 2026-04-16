@@ -90,7 +90,8 @@ Leader key: `<space>`. All mappings use `<leader>` = space unless marked otherwi
 | `<leader>tv` | Vertical layout |
 | `<leader>th` | Horizontal layout |
 | `<leader>tf` | Floating layout |
-| `<esc>` (in term) | Leave insert mode |
+| `<esc>` (in term) | Leave insert mode (terminal-normal) |
+| `<C-]>` (in term) | Send raw ESC to the TUI app |
 | `<C-hjkl>` (in term) | Navigate out of terminal |
 
 ## Visual mode

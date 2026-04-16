@@ -61,6 +61,7 @@ gi    implementation
 <leader>tv  force vertical   <leader>th  force horizontal   <leader>tf  force float
 ```
 Inside a terminal: `<Esc>` → terminal-normal mode, then `<C-hjkl>` to navigate out.
+Need ESC inside the TUI (exit detail view, back out of menus)? Use `<C-]>` — it sends raw ESC to the app.
 **Do NOT** press `<C-j>` in insert mode — Claude/Codex use it for newline. No terminal-mode override is installed, so raw keys pass through.
 
 ### In-editor chat (CodeCompanion — needs `ANTHROPIC_API_KEY`)

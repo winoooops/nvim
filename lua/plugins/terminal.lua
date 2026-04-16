@@ -130,8 +130,11 @@ return {
       pattern = "term://*",
       callback = function()
         local o = { buffer = 0, silent = true }
-        -- Only override <Esc> → terminal-normal mode. Nothing else.
+        -- <Esc>   → exit to terminal-normal mode (for Neovim navigation)
+        -- <C-]>   → send raw ESC to the TUI app (e.g. exit detail view in
+        --           Claude, escape from ctrl-z mode, back out of menus)
         vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], o)
+        vim.keymap.set("t", "<C-]>", "\x1b", o)
       end,
     })
   end,
