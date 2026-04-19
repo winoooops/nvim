@@ -6,21 +6,27 @@
 return {
   -- Colorscheme (primary)
   {
-    "folke/tokyonight.nvim",
+    "sainnhe/gruvbox-material",
     lazy = false,
     priority = 1000,
+    config = function()
+      vim.g.gruvbox_material_background = "medium"        -- "hard" | "medium" | "soft"
+      vim.g.gruvbox_material_foreground = "material"      -- "material" | "mix" | "original"
+      vim.g.gruvbox_material_better_performance = 1
+      vim.cmd.colorscheme("gruvbox-material")
+    end,
+  },
+
+  -- Colorschemes (alternates — switch via :colorscheme <name>)
+  {
+    "folke/tokyonight.nvim",
+    lazy = true,
     opts = {
       style = "night",
       transparent = false,
       styles = { sidebars = "transparent" },
     },
-    config = function(_, opts)
-      require("tokyonight").setup(opts)
-      vim.cmd.colorscheme("tokyonight")
-    end,
   },
-
-  -- Colorscheme (alternate — switch via :colorscheme catppuccin)
   {
     "catppuccin/nvim",
     name = "catppuccin",
@@ -48,7 +54,7 @@ return {
     dependencies = { "echasnovski/mini.icons" },
     opts = {
       options = {
-        theme = "tokyonight",
+        theme = "gruvbox-material",
         globalstatus = true,
         section_separators = { left = "", right = "" },
         component_separators = { left = "", right = "" },

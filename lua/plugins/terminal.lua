@@ -58,15 +58,18 @@ return {
     kset("<leader>tg", function() gemini:toggle() end, "Toggle Gemini CLI")
     kset("<leader>tt", function() scratch:toggle() end, "Toggle scratch shell")
 
-    -- <leader>ai — WSL2 only: save the Windows clipboard image to /tmp, copy
-    -- the path to the + register, and send it into the ACTIVE agent terminal.
+    -- <leader>ai — WSL2 or native Linux: save the clipboard image to /tmp,
+    -- copy the path to the + register, and send it into the ACTIVE agent terminal.
     -- Detection order: focused terminal → most recently opened → Claude fallback.
     -- Workflow:
-    --   1. Win+Shift+S on Windows to capture a screenshot (goes to clipboard)
+    --   1. Take a screenshot into the clipboard:
+    --        • WSL2:  Win+Shift+S
+    --        • Linux: Spectacle / Print Screen / Flameshot (enable "copy to clipboard")
     --   2. <leader>ai in nvim → active terminal receives the path
     --   3. Press Enter in the terminal to submit
     local platform = require("core.platform")
-    if platform.is_wsl then
+    if platform.is_wsl or platform.is_linux then
+      local clip_script = platform.is_wsl and "/bin/wsl-clip-img" or "/bin/linux-clip-img"
       -- Named terminals in priority order for the "find active" search.
       local named_terminals = {
         { term = claude, name = "Claude" },
@@ -90,10 +93,10 @@ return {
       end
 
       local function send_clip_img()
-        local script = vim.fn.stdpath("config") .. "/bin/wsl-clip-img"
+        local script = vim.fn.stdpath("config") .. clip_script
         local result = vim.fn.system(script)
         if vim.v.shell_error ~= 0 then
-          vim.notify("wsl-clip-img: " .. (result or "failed"), vim.log.levels.WARN, { title = "Clip image" })
+          vim.notify("clip-img: " .. (result or "failed"), vim.log.levels.WARN, { title = "Clip image" })
           return
         end
         local path = vim.trim(result)
@@ -110,10 +113,12 @@ return {
         target.term:send(path, false)
         vim.notify("Sent to " .. target.name .. ": " .. path, vim.log.levels.INFO, { title = "Clip image" })
       end
-      vim.api.nvim_create_user_command("WslClipImg", send_clip_img, {
-        desc = "Save Windows clipboard image to /tmp and send path to active agent terminal",
+      vim.api.nvim_create_user_command("ClipImg", send_clip_img, {
+        desc = "Save clipboard image to /tmp and send path to active agent terminal",
       })
-      kset("<leader>ai", send_clip_img, "Send Windows clipboard image → active terminal")
+      -- Keep the old command alias for existing muscle memory.
+      vim.api.nvim_create_user_command("WslClipImg", send_clip_img, { desc = "Alias of :ClipImg" })
+      kset("<leader>ai", send_clip_img, "Send clipboard image → active terminal")
     end
 
     -- Layout overrides — act on the last-active toggleterm

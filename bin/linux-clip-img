@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# bin/linux-clip-img — save the Linux clipboard image to a tempfile and
+# print the absolute path on stdout. Exits 1 if the clipboard has no image.
+#
+# Workflow:
+#   1. Take a screenshot with your OS tool (Spectacle / Print Screen / Flameshot)
+#      and make sure "copy to clipboard" is enabled in that tool's settings.
+#   2. In nvim: <leader>ai sends the saved path to the active agent terminal.
+#
+# Requires:
+#   Wayland: wl-clipboard (provides wl-paste)  — `sudo dnf install wl-clipboard`
+#   X11:     xclip                              — `sudo dnf install xclip`
+set -euo pipefail
+
+OUT="/tmp/clip-$(date +%Y%m%d-%H%M%S).png"
+
+read_clipboard_image() {
+  if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-paste >/dev/null 2>&1; then
+    wl-paste --type image/png 2>/dev/null
+  elif command -v xclip >/dev/null 2>&1; then
+    xclip -selection clipboard -t image/png -o 2>/dev/null
+  else
+    echo "Neither wl-paste nor xclip found. Install wl-clipboard (Wayland) or xclip (X11)." >&2
+    exit 2
+  fi
+}
+
+if ! read_clipboard_image > "$OUT" || [ ! -s "$OUT" ]; then
+  rm -f "$OUT"
+  echo "No image in clipboard (take a screenshot to clipboard first)" >&2
+  exit 1
+fi
+
+echo "$OUT"
