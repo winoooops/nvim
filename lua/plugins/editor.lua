@@ -91,6 +91,27 @@ return {
     },
   },
 
+  -- yazi.nvim — floating yazi file manager with image/PDF preview via
+  -- kitty graphics protocol (works natively in Ghostty). Use this when you
+  -- want to preview images/PDFs/videos from inside nvim. Requires `yazi`
+  -- CLI on PATH — `sudo dnf install yazi` on Nobara/Fedora.
+  {
+    "mikavilpas/yazi.nvim",
+    event = "VeryLazy",
+    dependencies = { "folke/snacks.nvim" },
+    keys = {
+      { "<leader>y",  "<cmd>Yazi<cr>",        desc = "Yazi at current file" },
+      { "<leader>Y",  "<cmd>Yazi cwd<cr>",    desc = "Yazi at cwd" },
+      { "<leader>yr", "<cmd>Yazi toggle<cr>", desc = "Resume last Yazi session" },
+    },
+    opts = {
+      open_for_directories = false,
+      keymaps = {
+        show_help = "<f1>",
+      },
+    },
+  },
+
   -- oil.nvim — edit the filesystem as a buffer
   {
     "stevearc/oil.nvim",

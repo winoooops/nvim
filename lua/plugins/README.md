@@ -8,7 +8,7 @@ One file per plugin domain. Each file returns a lazy.nvim plugin spec (or list o
 |---|---|---|
 | `init.lua` | ✅ | lazy.nvim bootstrap + domain imports |
 | `ui.lua` | ✅ | gruvbox-material (primary), tokyonight, catppuccin, mini.icons, lualine, bufferline, which-key, snacks.nvim, markview |
-| `editor.lua` | ✅ | telescope, smart-open, project.nvim, nvim-tree, oil.nvim, treesitter (`main` branch), rainbow-delimiters, nvim-autopairs, Comment.nvim, indent-blankline |
+| `editor.lua` | ✅ | telescope, smart-open, project.nvim, nvim-tree, yazi.nvim, oil.nvim, treesitter (`main` branch), rainbow-delimiters, nvim-autopairs, Comment.nvim, indent-blankline |
 | `git.lua` | ✅ | gitsigns, diffview.nvim |
 | `terminal.lua` | ✅ | toggleterm (vertical default, named Claude/Codex/Gemini/lazygit terminals) |
 | `lsp.lua` | ✅ | mason, mason-lspconfig, nvim-lspconfig (lua_ls, pyright, ts_ls, gopls, rust_analyzer, jsonls, yamlls, bashls, html, cssls) |

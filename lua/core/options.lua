@@ -47,6 +47,11 @@ opt.completeopt = { "menu", "menuone", "noselect", "noinsert" }
 -- Splits
 opt.splitbelow = true
 opt.splitright = true
+-- Don't auto-equalize window sizes when opening/closing splits. Without this,
+-- closing the editor buffer makes nvim-tree and agent terminals balloon, then
+-- reopening a terminal (<leader>tc/tx) collapses everything back. With it off,
+-- each window keeps its size — agent panels stay put, tree stays put.
+opt.equalalways = false
 
 -- Mouse
 opt.mouse = "a"
