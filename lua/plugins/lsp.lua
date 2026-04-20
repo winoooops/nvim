@@ -2,20 +2,33 @@
 -- mason + mason-lspconfig + nvim-lspconfig.
 -- Replaces the 2022 nvim-lsp-installer setup.
 
+-- Register LSP keymaps via LspAttach autocmd. This works regardless of
+-- whether the server was configured via the legacy `lspconfig.setup()`
+-- API or the newer `vim.lsp.config()` / `vim.lsp.enable()` model that
+-- nvim-lspconfig now uses internally on Neovim 0.11+.
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
+  callback = function(args)
+    local bufnr = args.buf
+    local function m(lhs, rhs, desc)
+      vim.keymap.set("n", lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
+    end
+    m("gd", vim.lsp.buf.definition, "Go to definition")
+    m("gD", vim.lsp.buf.declaration, "Go to declaration")
+    m("gr", vim.lsp.buf.references, "References")
+    m("gi", vim.lsp.buf.implementation, "Implementation")
+    m("K", vim.lsp.buf.hover, "Hover docs")
+    m("<leader>rn", vim.lsp.buf.rename, "Rename")
+    m("<leader>ca", vim.lsp.buf.code_action, "Code action")
+    m("[d", vim.diagnostic.goto_prev, "Prev diagnostic")
+    m("]d", vim.diagnostic.goto_next, "Next diagnostic")
+    m("<leader>dl", vim.diagnostic.open_float, "Diagnostic line")
+  end,
+})
+
 local function on_attach(_, bufnr)
-  local function m(lhs, rhs, desc)
-    vim.keymap.set("n", lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
-  end
-  m("gd", vim.lsp.buf.definition, "Go to definition")
-  m("gD", vim.lsp.buf.declaration, "Go to declaration")
-  m("gr", vim.lsp.buf.references, "References")
-  m("gi", vim.lsp.buf.implementation, "Implementation")
-  m("K", vim.lsp.buf.hover, "Hover docs")
-  m("<leader>rn", vim.lsp.buf.rename, "Rename")
-  m("<leader>ca", vim.lsp.buf.code_action, "Code action")
-  m("[d", vim.diagnostic.goto_prev, "Prev diagnostic")
-  m("]d", vim.diagnostic.goto_next, "Next diagnostic")
-  m("<leader>dl", vim.diagnostic.open_float, "Diagnostic line")
+  -- Kept for parity with the legacy API path; the LspAttach autocmd above
+  -- is the source of truth and fires on both APIs.
 end
 
 return {

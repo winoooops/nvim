@@ -92,6 +92,44 @@ return {
     opts = {
       preset = "helix",
       delay = 300,
+      -- Float the helix panel near the editor center instead of pinning
+      -- it to the right edge.
+      win = {
+        col     = 0.5,               -- horizontally centered
+        row     = 0.3,               -- a bit above vertical midline (feels balanced)
+        border  = "rounded",
+        padding = { 1, 3 },
+      },
+      layout = {
+        width   = { min = 30 },      -- a bit wider columns than default
+        spacing = 4,
+      },
+      -- All icons are Material Design Icons (nf-md-*) from Nerd Fonts —
+      -- chosen because they render consistently in JetBrainsMono Nerd Font.
+      spec = {
+        -- Single actions (bound via plain `opts` with no desc; label here)
+        { "<leader>e",         desc  = "Toggle nvim-tree",      icon = "󰙅 " },
+        { "<leader>E",         desc  = "Netrw explore",         icon = "󰉋 " },
+        { "<leader>g",         desc  = "Lazygit",               icon = "󰊢 " },
+        { "<leader>w",         desc  = "Delete buffer",         icon = "󰅖 " },
+        { "<leader>W",         desc  = "Delete all buffers",    icon = "󰩺 " },
+        { "<leader>Y",         desc  = "Yazi at cwd",           icon = "󰝰 " },
+        { "<leader>?",         desc  = "Buffer-local keymaps",  icon = "󰘥 " },
+
+        -- Group prefixes (keys with sub-keymaps)
+        { "<leader>a",         group = "AI / Agents",           icon = "󰚩 " },
+        { "<leader>c",         group = "Close / Code",          icon = "󰅗 " },
+        { "<leader>d",         group = "Diff / Diagnostic",     icon = "󰦓 " },
+        { "<leader>f",         group = "Find / Files",          icon = "󰍉 " },
+        { "<leader>h",         group = "Hunks (git)",           icon = "󰊢 " },
+        { "<leader>l",         group = "Resize (wider)",        icon = "󰞘 " },
+        { "<leader>n",         group = "Resize (narrower)",     icon = "󰞗 " },
+        { "<leader>r",         group = "Rename",                icon = "󰑕 " },
+        { "<leader>s",         group = "Split / Save",          icon = "󱂬 " },
+        { "<leader>t",         group = "Terminals",             icon = "󰆍 " },
+        { "<leader>y",         group = "Yazi",                  icon = "󰉋 " },
+        { "<leader><leader>",  group = "Tab",                   icon = "󰓩 " },
+      },
     },
     keys = {
       { "<leader>?", function() require("which-key").show({ global = false }) end, desc = "Buffer local keymaps" },
