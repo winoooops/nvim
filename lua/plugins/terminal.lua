@@ -36,15 +36,73 @@ return {
 
     -- Named persistent terminals. Each has a unique count so toggling
     -- reopens the same instance.
-    -- Matches the user's bashrc alias: NO_FLICKER=1 claude --dangerously-skip-permissions
-    -- Bash aliases aren't expanded in non-interactive shells, so we inline the
-    -- expansion here. If you don't want --dangerously-skip-permissions on a
-    -- given machine, edit this line or fall back to `cmd = "bash -ic claude"`.
-    local claude = Terminal:new({ cmd = "NO_FLICKER=1 claude --dangerously-skip-permissions", hidden = true, direction = "vertical", count = 11 })
+    -- Claude is launched with NO_FLICKER=1 + --effort max + skip-perms.
+    -- Bash aliases aren't expanded in non-interactive shells, so the flags
+    -- are inlined here. Drop/swap flags per-machine as needed; for a more
+    -- conservative default use `cmd = "bash -ic claude"` and rely on the
+    -- shell alias.
+    local claude = Terminal:new({ cmd = "NO_FLICKER=1 claude --effort max --dangerously-skip-permissions", hidden = true, direction = "vertical", count = 11 })
     local codex = Terminal:new({ cmd = "codex", hidden = true, direction = "vertical", count = 12 })
     local gemini = Terminal:new({ cmd = "gemini", hidden = true, direction = "vertical", count = 13 })
-    local scratch = Terminal:new({ hidden = true, direction = "vertical", count = 14 })
-    local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float", count = 15 })
+    local kimi = Terminal:new({ cmd = "kimi", hidden = true, direction = "vertical", count = 16 })
+    -- Scratch shell: lives BELOW the editor window only (not spanning
+    -- the full screen width). toggleterm can't do a "split within a
+    -- specific column", so we drop to native Neovim :split | :terminal.
+    -- Focus the editor window first so the split doesn't land below the
+    -- tree or an agent panel.
+    local scratch_buf = nil
+
+    local function focus_editor_window()
+      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        local bt = vim.bo[buf].buftype
+        local ft = vim.bo[buf].filetype
+        if bt ~= "terminal" and ft ~= "NvimTree" and ft ~= "oil" then
+          vim.api.nvim_set_current_win(win)
+          return
+        end
+      end
+    end
+
+    local function toggle_scratch()
+      -- Visible somewhere? Hide it.
+      if scratch_buf and vim.api.nvim_buf_is_valid(scratch_buf) then
+        local wins = vim.fn.win_findbuf(scratch_buf)
+        if #wins > 0 then
+          for _, w in ipairs(wins) do
+            pcall(vim.api.nvim_win_close, w, false)
+          end
+          return
+        end
+      end
+      -- Hidden or doesn't exist. Open below the editor.
+      focus_editor_window()
+      vim.cmd("belowright split")
+      -- 13% of total screen height (13 is a Fibonacci number — gives a
+      -- compact, quick-glance scratch strip rather than a heavy pane).
+      vim.cmd("resize " .. math.floor(vim.o.lines * 0.13))
+      if scratch_buf and vim.api.nvim_buf_is_valid(scratch_buf) then
+        vim.api.nvim_win_set_buf(0, scratch_buf)
+      else
+        vim.cmd("terminal")
+        scratch_buf = vim.api.nvim_get_current_buf()
+      end
+      vim.cmd("startinsert")
+    end
+    -- Lazygit is a full TUI — Esc is used for "cancel / go back" at every
+    -- level, so our global <Esc> → terminal-normal mapping is actively
+    -- harmful here. on_open forces insert mode and removes the remap so
+    -- Esc passes straight through to lazygit.
+    local lazygit = Terminal:new({
+      cmd = "lazygit",
+      hidden = true,
+      direction = "float",
+      count = 15,
+      on_open = function(term)
+        vim.cmd("startinsert!")
+        pcall(vim.keymap.del, "t", "<esc>", { buffer = term.bufnr })
+      end,
+    })
 
     -- Expose lazygit toggle globally so keymaps.lua can call it.
     _G._LAZYGIT_TOGGLE = function() lazygit:toggle() end
@@ -56,7 +114,8 @@ return {
     kset("<leader>tc", function() claude:toggle() end, "Toggle Claude CLI")
     kset("<leader>tx", function() codex:toggle() end, "Toggle Codex CLI")
     kset("<leader>tg", function() gemini:toggle() end, "Toggle Gemini CLI")
-    kset("<leader>tt", function() scratch:toggle() end, "Toggle scratch shell")
+    kset("<leader>tk", function() kimi:toggle() end, "Toggle Kimi CLI")
+    kset("<leader>tt", toggle_scratch, "Toggle scratch shell (below editor)")
 
     -- <leader>ai — WSL2 or native Linux: save the clipboard image to /tmp,
     -- copy the path to the + register, and send it into the ACTIVE agent terminal.
@@ -75,7 +134,7 @@ return {
         { term = claude, name = "Claude" },
         { term = codex,  name = "Codex" },
         { term = gemini, name = "Gemini" },
-        { term = scratch, name = "Shell" },
+        { term = kimi,   name = "Kimi" },
       }
 
       -- Find the best terminal to send to: focused > open > Claude fallback.

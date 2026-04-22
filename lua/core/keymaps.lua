@@ -81,12 +81,21 @@ map("n", "<leader>s", function()
 end, opts)
 
 -- Telescope (plugin loaded in plugins/editor.lua)
-map("n", "<leader>f", function()
+-- <leader>f is now a PREFIX, not an action — no more ambiguity with <leader>fg etc.
+map("n", "<leader>ff", function()
   require("telescope.builtin").find_files(require("telescope.themes").get_ivy())
 end, opts)
 map("n", "<leader>fp", "<cmd>Telescope projects<CR>", opts)
 -- <leader>fs was telescope-frecency in 2022; now points to smart-open.nvim
 map("n", "<leader>fs", "<cmd>Telescope smart_open<CR>", opts)
+-- Fuzzy search text INSIDE files (ripgrep-backed live grep)
+map("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", opts)
+-- Fuzzy search the word under the cursor across project
+map("n", "<leader>fw", "<cmd>Telescope grep_string<CR>", opts)
+-- Fuzzy search inside the current buffer only
+map("n", "<leader>fb", "<cmd>Telescope current_buffer_fuzzy_find<CR>", opts)
+-- Open buffer list (fuzzy search open buffers)
+map("n", "<leader>fl", "<cmd>Telescope buffers<CR>", opts)
 
 -- Lazygit (preserved — opens lazygit terminal from plugins/terminal.lua)
 map("n", "<leader>g", function() _G._LAZYGIT_TOGGLE() end, opts)
