@@ -92,14 +92,6 @@ return {
     opts = {
       preset = "helix",
       delay = 300,
-      -- Float the helix panel near the editor center instead of pinning
-      -- it to the right edge.
-      win = {
-        col     = 0.5,               -- horizontally centered
-        row     = 0.3,               -- a bit above vertical midline (feels balanced)
-        border  = "rounded",
-        padding = { 1, 3 },
-      },
       layout = {
         width   = { min = 30 },      -- a bit wider columns than default
         spacing = 4,

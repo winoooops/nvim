@@ -52,6 +52,8 @@ opt.splitright = true
 -- reopening a terminal (<leader>tc/tx) collapses everything back. With it off,
 -- each window keeps its size — agent panels stay put, tree stays put.
 opt.equalalways = false
+-- Tidy end-of-buffer fill (no `~` trailing lines).
+opt.fillchars:append({ eob = " " })
 
 -- Mouse
 opt.mouse = "a"

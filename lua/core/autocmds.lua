@@ -58,3 +58,30 @@ autocmd("VimResized", {
   group = augroup("ResizeSplits", { clear = true }),
   command = "tabdo wincmd =",
 })
+
+-- ========================================================================
+-- Active-panel dimming: tint inactive windows with a slightly darker
+-- Gruvbox Material background so the focused window stands out without
+-- having to fight per-plugin border rendering. NormalNC is Neovim's
+-- built-in "Normal, Non-Current" highlight group — updates instantly on
+-- focus change, no autocmd timing needed.
+--
+-- Palette ref (Gruvbox Material medium):
+--   bg0 (Normal)    : #282828   ← active window
+--   bg0_hard        : #1d2021   ← inactive window (subtle, readable)
+--   bg1             : #32302f   ← another option if #1d2021 feels too dark
+-- ========================================================================
+local function apply_panel_dim()
+  vim.api.nvim_set_hl(0, "NormalNC",       { bg = "#1d2021" })
+  vim.api.nvim_set_hl(0, "WinSeparator",   { fg = "#45403d", bg = "#1d2021" })
+end
+
+-- Re-apply on every colorscheme load so switching themes (or reloading
+-- gruvbox-material) doesn't blow it away.
+autocmd("ColorScheme", {
+  group = augroup("PanelDim", { clear = true }),
+  callback = apply_panel_dim,
+})
+
+-- Apply immediately for the current session.
+apply_panel_dim()
