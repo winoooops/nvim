@@ -90,10 +90,18 @@ return {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
-      preset = "helix",
-      delay = 300,
+      -- "modern" anchors a floating panel to the bottom of the screen,
+      -- independent of the current window. This avoids the two issues
+      -- the "helix" preset had in our cockpit layout:
+      --   1. When triggered from nvim-tree (narrow left pane), helix
+      --      rendered the panel far on the right, out of sight.
+      --   2. nvim-tree's reload_on_bufenter + filesystem-watcher redraws
+      --      would close the helix floating window mid-render, giving
+      --      the "flashes once then gone" behavior.
+      preset = "modern",
+      delay = 200,
       layout = {
-        width   = { min = 30 },      -- a bit wider columns than default
+        width   = { min = 30 },
         spacing = 4,
       },
       -- All icons are Material Design Icons (nf-md-*) from Nerd Fonts —

@@ -52,19 +52,36 @@ return {
     -- tree or an agent panel.
     local scratch_buf = nil
 
+    -- Find a real editor window: require an empty buftype (so terminals,
+    -- nofile/prompt buffers, quickfix, and the command-line window are
+    -- all skipped) and skip known explorer filetypes. Returns true on
+    -- success.
     local function focus_editor_window()
       for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
         local buf = vim.api.nvim_win_get_buf(win)
         local bt = vim.bo[buf].buftype
         local ft = vim.bo[buf].filetype
-        if bt ~= "terminal" and ft ~= "NvimTree" and ft ~= "oil" then
+        if bt == "" and ft ~= "NvimTree" and ft ~= "oil" then
           vim.api.nvim_set_current_win(win)
-          return
+          return true
         end
       end
+      return false
     end
 
     local function toggle_scratch()
+      -- You can't run :split / :terminal from inside the command-line
+      -- window (q:/q/) — it throws E11 and leaves the UI in a weird
+      -- state. Bail early with a friendly notice.
+      if vim.fn.getcmdwintype() ~= "" then
+        vim.notify(
+          "Close the command-line window first (press <C-c> or :q), then try again",
+          vim.log.levels.WARN,
+          { title = "Scratch shell" }
+        )
+        return
+      end
+
       -- Visible somewhere? Hide it.
       if scratch_buf and vim.api.nvim_buf_is_valid(scratch_buf) then
         local wins = vim.fn.win_findbuf(scratch_buf)
@@ -75,19 +92,37 @@ return {
           return
         end
       end
-      -- Hidden or doesn't exist. Open below the editor.
-      focus_editor_window()
-      vim.cmd("belowright split")
-      -- 13% of total screen height (13 is a Fibonacci number — gives a
-      -- compact, quick-glance scratch strip rather than a heavy pane).
-      vim.cmd("resize " .. math.floor(vim.o.lines * 0.13))
-      if scratch_buf and vim.api.nvim_buf_is_valid(scratch_buf) then
-        vim.api.nvim_win_set_buf(0, scratch_buf)
-      else
-        vim.cmd("terminal")
-        scratch_buf = vim.api.nvim_get_current_buf()
+
+      -- Hidden or doesn't exist — open below the editor.
+      if not focus_editor_window() then
+        vim.notify(
+          "No editor window to anchor scratch shell below",
+          vim.log.levels.WARN,
+          { title = "Scratch shell" }
+        )
+        return
       end
-      vim.cmd("startinsert")
+
+      local ok, err = pcall(function()
+        vim.cmd("belowright split")
+        -- 13% of total screen height (13 is a Fibonacci number — gives
+        -- a compact, quick-glance scratch strip rather than a heavy pane).
+        vim.cmd("resize " .. math.floor(vim.o.lines * 0.13))
+        if scratch_buf and vim.api.nvim_buf_is_valid(scratch_buf) then
+          vim.api.nvim_win_set_buf(0, scratch_buf)
+        else
+          vim.cmd("terminal")
+          scratch_buf = vim.api.nvim_get_current_buf()
+        end
+        vim.cmd("startinsert")
+      end)
+      if not ok then
+        vim.notify(
+          ("Scratch shell failed: %s"):format(err or "unknown"),
+          vim.log.levels.ERROR,
+          { title = "Scratch shell" }
+        )
+      end
     end
     -- Lazygit is a full TUI — Esc is used for "cancel / go back" at every
     -- level, so our global <Esc> → terminal-normal mapping is actively

@@ -63,7 +63,11 @@ opt.autoread = true
 opt.updatetime = 250 -- down from default 4000 for faster CursorHold + external-change detection
 
 -- Timing
-opt.timeoutlen = 500
+-- How long Vim waits for a mapped key sequence to complete. Also
+-- controls how long which-key's popup stays visible — once this expires
+-- Vim clears the pending sequence and which-key dismisses. 1500ms is
+-- comfortable for reading the popup without feeling laggy on chords.
+opt.timeoutlen = 1500
 
 -- Clipboard — platform.lua handles WSL2; macOS/Linux native get unnamedplus here.
 opt.clipboard = "unnamedplus"
