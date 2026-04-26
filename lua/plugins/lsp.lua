@@ -17,7 +17,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
     m("gD", vim.lsp.buf.declaration, "Go to declaration")
     m("gr", vim.lsp.buf.references, "References")
     m("gi", vim.lsp.buf.implementation, "Implementation")
-    m("K", vim.lsp.buf.hover, "Hover docs")
+    -- Hover moved off `K` so <S-k> stays free for :bnext (buffer
+    -- cycling). `gh` fits the existing g* LSP nav pattern.
+    m("gh", vim.lsp.buf.hover, "Hover docs")
     m("<leader>rn", vim.lsp.buf.rename, "Rename")
     m("<leader>ca", vim.lsp.buf.code_action, "Code action")
     m("[d", vim.diagnostic.goto_prev, "Prev diagnostic")
@@ -47,6 +49,7 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
       "neovim/nvim-lspconfig",
+      "saghen/blink.cmp",  -- must load before LSPs so its capabilities are available
     },
     config = function()
       require("mason").setup()
@@ -66,8 +69,14 @@ return {
       })
 
       local lspconfig = require("lspconfig")
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      -- blink.cmp extends capabilities when it loads via its own setup
+      -- blink.cmp's capabilities advertise snippet support, additionalTextEdits,
+      -- resolve-on-select, etc. Without this servers (rust-analyzer especially)
+      -- send sparse completions: function names but no signatures, types, or
+      -- snippet bodies.
+      local ok_blink, blink = pcall(require, "blink.cmp")
+      local capabilities = ok_blink
+        and blink.get_lsp_capabilities()
+        or vim.lsp.protocol.make_client_capabilities()
 
       local servers = {
         lua_ls = {

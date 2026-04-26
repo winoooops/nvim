@@ -27,6 +27,7 @@ require("lazy").setup({
     { import = "plugins.terminal" },
     { import = "plugins.lsp" },
     { import = "plugins.completion" },
+    { import = "plugins.motion" },
     { import = "plugins.format" },
     { import = "plugins.lint" },
     { import = "plugins.ai" },

@@ -85,3 +85,26 @@ autocmd("ColorScheme", {
 
 -- Apply immediately for the current session.
 apply_panel_dim()
+
+-- ========================================================================
+-- Terminal bell → desktop notification
+-- ========================================================================
+-- Claude Code (preferredNotifChannel=terminal_bell) emits a BEL when it
+-- wants attention. libvterm absorbs the BEL inside :terminal so it never
+-- reaches the outer tmux/Ghostty stack — but nvim does fire `User TermBell`
+-- on every terminal-buffer bell, regardless of `belloff`. Bridge that
+-- straight to notify-send. (Sibling/non-nvim tmux panes are covered by
+-- the alert-bell hook in ~/.tmux.conf.)
+autocmd("User", {
+  pattern = "TermBell",
+  group = augroup("TermBellNotify", { clear = true }),
+  callback = function()
+    vim.fn.jobstart({
+      "notify-send",
+      "-a", "Claude Code",
+      "-i", "utilities-terminal",
+      "Claude Code",
+      "needs your attention",
+    }, { detach = true })
+  end,
+})

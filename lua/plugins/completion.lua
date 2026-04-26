@@ -21,16 +21,26 @@ return {
     opts = {
       keymap = {
         preset = "default",
-        ["<CR>"] = { "accept", "fallback" },
-        ["<Tab>"] = { "snippet_forward", "select_next", "fallback" },
-        ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+        -- Enter: accept the first suggestion even if you haven't navigated
+        -- to it (`select_and_accept` picks the first item when nothing is
+        -- selected). If the menu is empty, falls through to a normal newline.
+        ["<CR>"] = { "select_and_accept", "fallback" },
+        -- Tab: only used for snippet placeholders. When no snippet is active
+        -- it falls through to vim's normal Tab → indent (2 spaces; see
+        -- core/options.lua: expandtab/softtabstop/shiftwidth=2). Use <C-n> /
+        -- <C-p> (or arrows) to navigate the completion menu.
+        ["<Tab>"] = { "snippet_forward", "fallback" },
+        ["<S-Tab>"] = { "snippet_backward", "fallback" },
       },
       appearance = {
         nerd_font_variant = "mono",
       },
       completion = {
         documentation = { auto_show = true, auto_show_delay_ms = 200 },
-        list = { selection = { preselect = false, auto_insert = false } },
+        -- preselect=true highlights the first item so <CR>'s
+        -- `select_and_accept` has something to grab. auto_insert stays off
+        -- so we don't pre-fill text into the buffer as you type.
+        list = { selection = { preselect = true, auto_insert = false } },
       },
       snippets = { preset = "luasnip" },
       sources = {
