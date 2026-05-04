@@ -41,8 +41,8 @@ return {
     -- are inlined here. Drop/swap flags per-machine as needed; for a more
     -- conservative default use `cmd = "bash -ic claude"` and rely on the
     -- shell alias.
-    local claude = Terminal:new({ cmd = "NO_FLICKER=1 claude --effort max --dangerously-skip-permissions", hidden = true, direction = "vertical", count = 11 })
-    local codex = Terminal:new({ cmd = "codex", hidden = true, direction = "vertical", count = 12 })
+    local claude = Terminal:new({ cmd = "NO_FLICKER=1 CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude --effort max --dangerously-skip-permissions", hidden = true, direction = "vertical", count = 11 })
+    local codex = Terminal:new({ cmd = "codex --dangerously-bypass-approvals-and-sandbox", hidden = true, direction = "vertical", count = 12 })
     local gemini = Terminal:new({ cmd = "gemini", hidden = true, direction = "vertical", count = 13 })
     local kimi = Terminal:new({ cmd = "kimi", hidden = true, direction = "vertical", count = 16 })
     -- Scratch shell: lives BELOW the editor window only (not spanning

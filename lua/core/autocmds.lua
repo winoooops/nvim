@@ -72,8 +72,14 @@ autocmd("VimResized", {
 --   bg1             : #32302f   ← another option if #1d2021 feels too dark
 -- ========================================================================
 local function apply_panel_dim()
-  vim.api.nvim_set_hl(0, "NormalNC",       { bg = "#1d2021" })
-  vim.api.nvim_set_hl(0, "WinSeparator",   { fg = "#45403d", bg = "#1d2021" })
+  vim.api.nvim_set_hl(0, "NormalNC",            { bg = "#1d2021" })
+  -- Inactive border: visible neutral gray (was #45403d, basically invisible).
+  vim.api.nvim_set_hl(0, "WinSeparator",        { fg = "#7c6f64", bg = "#1d2021" })
+  -- Active border: vivid blue matching tmux's pane-active-border. Used via the
+  -- WinEnter/WinLeave winhl swap below — the focused window's border lights up
+  -- regardless of whether the buffer is a terminal (toggleterm's shade_terminals
+  -- repaints backgrounds and defeats NormalNC, but borders are unaffected).
+  vim.api.nvim_set_hl(0, "ActiveWinSeparator",  { fg = "#89b4fa", bg = "NONE" })
 end
 
 -- Re-apply on every colorscheme load so switching themes (or reloading
@@ -85,6 +91,26 @@ autocmd("ColorScheme", {
 
 -- Apply immediately for the current session.
 apply_panel_dim()
+
+-- Swap the focused window's WinSeparator → ActiveWinSeparator. This is the
+-- ONLY reliable visual indicator of focus when terminal buffers are involved
+-- — NormalNC dimming gets overridden by toggleterm's shade_terminals.
+local active_border_grp = augroup("ActiveBorder", { clear = true })
+autocmd({ "WinEnter", "BufWinEnter" }, {
+  group = active_border_grp,
+  callback = function()
+    vim.opt_local.winhl:append("WinSeparator:ActiveWinSeparator")
+  end,
+})
+autocmd("WinLeave", {
+  group = active_border_grp,
+  callback = function()
+    -- Strip our override; the window goes back to inheriting WinSeparator.
+    local cur = vim.opt_local.winhl:get()
+    cur["WinSeparator"] = nil
+    vim.opt_local.winhl = cur
+  end,
+})
 
 -- ========================================================================
 -- Terminal bell → desktop notification

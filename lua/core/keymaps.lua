@@ -33,8 +33,22 @@ map("n", "<leader>nS", ":resize -2<CR>", opts)
 map("n", "<leader>ls", ":vertical resize +2<CR>", opts)
 map("n", "<leader>ns", ":vertical resize -2<CR>", opts)
 
--- Tree toggle (nvim-tree — plugin loaded in plugins/editor.lua)
-map("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
+-- Tree toggle (nvim-tree — plugin loaded in plugins/editor.lua).
+-- Focus a real editor window first so the tree always opens against the
+-- screen edge instead of next to whichever pane (often an agent terminal)
+-- happened to be focused — that avoids width jitter on toggle.
+map("n", "<leader>e", function()
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local bt = vim.bo[buf].buftype
+    local ft = vim.bo[buf].filetype
+    if bt == "" and ft ~= "NvimTree" and ft ~= "oil" then
+      vim.api.nvim_set_current_win(win)
+      break
+    end
+  end
+  vim.cmd("NvimTreeToggle")
+end, opts)
 map("n", "<leader>E", ":Explore<CR>", opts)
 
 -- Buffer cycling (preserved — Shift-j/k)
@@ -69,8 +83,12 @@ map("i", "<C-b>", "<C-O>b", opts)
 map("i", "<C-a>", "<C-O>A", opts)
 map("i", "<C-i>", "<C-O>I", opts)
 
--- Save + format — migrated from deprecated vim.lsp.buf.formatting_sync()
-map("n", "<leader>s", function()
+-- Save + format — moved off `<leader>s` so it doesn't shadow the
+-- `<leader>sw`/`<leader>sW` window-split chords. With save on `<leader>s`
+-- alone, vim waits timeoutlen before deciding which mapping to fire,
+-- making the save feel laggy AND making the chord race-prone. Doubling
+-- to `<leader>ss` keeps `<leader>s` as a pure prefix.
+map("n", "<leader>ss", function()
   local ok, conform = pcall(require, "conform")
   if ok then
     conform.format({ async = false, lsp_fallback = true })

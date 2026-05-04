@@ -59,7 +59,16 @@ return {
     cmd = { "NvimTreeToggle", "NvimTreeFocus" },
     dependencies = { "echasnovski/mini.icons" },
     opts = {
-      view = { width = 32 },
+      view = {
+        width = 32,
+        -- Without this, opening/closing the tree from a non-edge window
+        -- (e.g. with focus in an agent toggleterm pane) makes nvim
+        -- redistribute the freed/taken columns across all other windows,
+        -- which combined with toggleterm's columns*0.4 size function
+        -- makes panel widths feel jittery. This pins the tree's 32 cols
+        -- to its own edge and leaves other window absolute widths alone.
+        preserve_window_proportions = true,
+      },
       renderer = {
         group_empty = true,
         highlight_git = true,
@@ -125,18 +134,44 @@ return {
   },
 
   -- Treesitter (master branch is archived; main branch + Neovim 0.12 built-in TS)
+  -- On `main`, the old `require("nvim-treesitter.configs").setup{highlight={enable=true}}`
+  -- API is gone. `ensure_installed` only downloads parsers; you have to start
+  -- highlighting explicitly per filetype via `vim.treesitter.start()`. Without
+  -- this autocmd, syntax colors fall back to LSP semantic tokens (mostly fine
+  -- to look at) but flash.nvim's treesitter() / structural motion plugins find
+  -- zero nodes to operate on.
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
-    opts = {
-      ensure_installed = {
+    config = function()
+      local parsers = {
         "lua", "vim", "vimdoc", "bash", "json", "yaml", "toml", "markdown",
         "markdown_inline", "html", "css", "javascript", "typescript", "tsx",
         "python", "go", "rust", "regex",
-      },
-    },
+      }
+      local ts = require("nvim-treesitter")
+      if ts.install then ts.install(parsers) end
+
+      -- Map parser → filetype(s) for the autocmd. Most are 1:1; a few diverge.
+      local ft_for_parser = {
+        markdown_inline = "markdown",
+        tsx = "typescriptreact",
+      }
+      local fts = {}
+      for _, p in ipairs(parsers) do
+        table.insert(fts, ft_for_parser[p] or p)
+      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("UserTSHighlight", { clear = true }),
+        pattern = fts,
+        callback = function(args)
+          pcall(vim.treesitter.start, args.buf)
+        end,
+      })
+    end,
   },
 
   -- Rainbow delimiters (replaces archived ts-rainbow)
